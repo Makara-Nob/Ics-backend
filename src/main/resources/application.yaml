@@ -1,167 +1,91 @@
-# application.yaml
-
 server:
-  port: 8888
-  servlet:
-    context-path: /
-  compression:
-    enabled: true
-  connection-timeout: 300000
+  port: 9002
 
 spring:
   application:
-    name: internal-dev-api
-
-  main:
-    allow-bean-definition-overriding: true
-
-  # JPA Configuration
+    name: account_sell
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
-    show-sql: false
+      show-sql: true
+      format_sql: true
     properties:
       hibernate:
-        format_sql: false
         jdbc:
           lob:
             non_contextual_creation: true
-          batch_size: 50
-        order_inserts: true
-        order_updates: true
-        batch_versioned_data: true
-        connection:
-          provider_disables_autocommit: true
-        cache:
-          use_second_level_cache: false
+        temp:
+          use_jdbc_metadata_defaults: false
 
-  # Primary Database (PostgreSQL)
   datasource:
-    url: jdbc:postgresql://localhost:5432/ics
+    url: jdbc:postgresql://192.168.127.86:5432/account_sell_online
     username: postgres
-    password: 88889999
+    password: 123cp!@#
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 20
+      maximum-pool-size: 10
       minimum-idle: 5
-      connection-timeout: 30000
-      idle-timeout: 1800000
-      max-lifetime: 7200000
-      leak-detection-threshold: 1800000
-      pool-name: PostgreSQL-Pool
-      auto-commit: false
-
-  # Task Execution for Async Telegram notifications
-  task:
-    execution:
-      pool:
-        core-size: 2
-        max-size: 5
-        queue-capacity: 100
-        thread-name-prefix: async-telegram-
-
-  # Mail Configuration
-  mail:
-    host: 10.18.1.204
-    port: 25
-    username: ithelpdesk@cambodiapostbank.com.kh
-    password:
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: false
-          ssl:
-            trust: '*'
-    default-encoding: UTF-8
+      connectionTimeout: 30000
+      idleTimeout: 600000
+      maxLifetime: 1800000
 
 # JWT Configuration
 jwt:
   secret:
-    key: f7e8d9c6b5a4938271605f4de3d2c1b0a9f8e7d6c5b4a392817f6e5d4c3b2a1908f7e6d5c4b3a29180716f5e4d3c2b1a001
-  expiration-min: 525600
-  issuer: internal-dev-api
+    key: da2bd42bef8f9f957d647ed13571d35b59c7055fb723eacdb05154878da17d77d3180385fc232cab38bded0fc7dbda0d439cc275e91164ade266d64d50633bc7
+  expiration-min: 144000000000  # 24 hours
+  issuer: cbc-sender-api
 
-# Telegram Bot Configuration
-telegram:
-  bot:
-    token: "8227113200:AAGq1I7Hs0CjkSW99M9rgrIdlHpgM8r6NMY"
-    chat-id: "-4816130196"
-    enabled: true
-
-# TraineeReport Configuration
+# Default users configuration
 app:
+  # Whether to create default users on startup
   default-users:
     create: true
-  super:
-    username: makara@gmail.com
-    password: 88889999
-    email: makara@gmail.com
 
-  data-load:
-    batch-size: 1000
-    max-retries: 1
-    timeout-hours: 5
-    connection-timeout-minutes: 5
-    query-timeout-hours: 4
-    network-timeout-hours: 5
-    progress-log-interval-minutes: 10
-    heartbeat-interval-minutes: 5
+  # Default admin user
+  admin:
+    email: admin@cbcsender.com
+    password: Admin@123
+
+  # Default developer user
+  developer:
+    email: developer@cbcsender.com
+    password: Developer@123
+
+  # Default regular user
+  user:
+    email: user@cbcsender.com
+    password: User@123
+
+# CORS Configuration
+cors:
+  allowed-origins: "*"
+  allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  allowed-headers: "*"
+  max-age: 3600
+
+# Security Configuration
+security:
+  require-ssl: false
+  basic:
+    enabled: false
+  ignored: /api/v1/auth/**,/swagger-ui/**,/v3/api-docs/**
 
 # Logging Configuration
 logging:
   level:
     root: INFO
-    com.internal: INFO
-    com.internal.feature.report_staging: INFO
-    org.springframework.security: WARN
-    org.springframework.web: WARN
-    org.springframework.data.jpa: WARN
+    com.cbc_sender: DEBUG
+    org.springframework.security: INFO
+    org.springframework.web: INFO
     org.hibernate: WARN
-    org.hibernate.SQL: WARN
-    org.hibernate.type.descriptor.sql.BasicBinder: WARN
-    com.zaxxer.hikari: INFO
-    org.postgresql: WARN
-    org.springframework.mail: DEBUG
-    org.springframework.mail.javamail: DEBUG
-  pattern:
-    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-  file:
-    name: logs/internal-dev-api.log
-    max-size: 100MB
-    max-history: 10
 
-# OpenAPI Documentation
+# Swagger/OpenAPI Configuration
 springdoc:
   api-docs:
     path: /v3/api-docs
-    enabled: true
   swagger-ui:
     path: /swagger-ui.html
-    enabled: true
-    operations-sorter: method
-    tags-sorter: alpha
-    disable-swagger-default-url: true
-
-# Management Endpoints
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,loggers,threaddump
-  endpoint:
-    health:
-      show-details: always
-  health:
-    db:
-      enabled: true
-  metrics:
-    export:
-      simple:
-        enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
