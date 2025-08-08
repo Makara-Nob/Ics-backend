@@ -8,7 +8,10 @@ import lombok.Getter;
 @Getter
 public enum RoleEnum {
     ADMIN("System Administrator", "Full system access"),
-    SUPER("Super admin", "Technical access for all full system");
+    SUPER("Super admin", "Technical access for all full system"),
+    ECHANNEL("E-Channel Operator", "Electronic channel management and monitoring access"),
+    OPERATION("Operations Specialist", "Operational processes and workflow management access"),
+    CALL_CENTER("Call Center Agent", "Customer service and support access");
 
     /**
      * -- GETTER --

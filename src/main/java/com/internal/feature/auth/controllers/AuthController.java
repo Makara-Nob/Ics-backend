@@ -1,89 +1,106 @@
 package com.internal.feature.auth.controllers;
 
-import com.internal.exceptions.response.ApiResponse;
-import com.internal.feature.auth.dto.request.LoginRequestDto;
-import com.internal.feature.auth.dto.request.UpdateUserRequestDto;
+import com.internal.config.RequiresRole;
 import com.internal.feature.auth.dto.response.AuthResponseDTO;
+import com.internal.feature.auth.dto.request.LoginRequestDto;
+import com.internal.feature.auth.dto.request.RegisterRequestDto;
 import com.internal.feature.auth.dto.response.UserResponseDto;
+import com.internal.exceptions.response.ApiResponse;
 import com.internal.feature.auth.service.AuthService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import javax.validation.Valid;
+import java.util.*;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/admin/auth")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Authentication")
 public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponseDTO>> login(@Valid @RequestBody LoginRequestDto loginDto) {
-        log.info("Authentication attempt for user: {}", loginDto.getUsername());
-        
+    @PostMapping("login")
+    public ApiResponse<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDto loginDto) {
+        log.info("Login request received for user: {}", loginDto.getIdCard());
+
         AuthResponseDTO authResponse = authService.login(loginDto);
-        log.info("Authentication successful for user: {}", loginDto.getUsername());
-        
-        return ResponseEntity.ok(new ApiResponse<>(
-            "success",
-            "Login successful",
-            authResponse
-        ));
+
+        log.info("Login successful for user: {}", loginDto.getIdCard());
+
+        return new ApiResponse<>(
+                "success",
+                "Login successful",
+                authResponse
+        );
     }
 
-    @PostMapping("/roles")
-    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAvailableRoles() {
-        log.debug("Fetching available roles");
-        
+    @PostMapping("register")
+    public ApiResponse<UserResponseDto> register(@Valid @RequestBody RegisterRequestDto registerDto) {
+        log.info("Registration request received for id card: {}", registerDto.getIdCard());
+
+        UserResponseDto userResponse = authService.register(registerDto);
+
+        log.info("Registration successful for user: {}", registerDto.getIdCard());
+
+        return new ApiResponse<>(
+                "success",
+                "Registration successful",
+                userResponse
+        );
+    }
+
+    @PostMapping("roles")
+    public ApiResponse<List<Map<String, Object>>> getAvailableRoles() {
+        log.info("Request received to fetch available roles");
+
         List<Map<String, Object>> roles = authService.getAvailableRoles();
-        log.debug("Retrieved {} available roles", roles.size());
-        
-        return ResponseEntity.ok(new ApiResponse<>(
-            "success",
-            "Available roles retrieved successfully",
-            roles
-        ));
+
+
+        return new ApiResponse<>(
+                "success",
+                "Available roles retrieved successfully",
+                roles
+        );
     }
 
-    @PostMapping("/validate-token")
-    public ResponseEntity<ApiResponse<Boolean>> validateToken() {
-        log.debug("Token validation request");
-        
+    @PostMapping("validate-token")
+    public ApiResponse<Boolean> validateToken() {
+        log.info("Token validation request received");
+
         boolean isValid = authService.validateToken();
-        String message = isValid ? "Token is valid" : "Token is invalid or user account is inactive";
-        String status = isValid ? "success" : "error";
-        
-        return ResponseEntity.ok(new ApiResponse<>(status, message, isValid));
+
+        if (isValid) {
+            log.info("Token validation successful");
+            return new ApiResponse<>(
+                    "success",
+                    "Token is valid",
+                    true
+            );
+        } else {
+            return new ApiResponse<>(
+                    "error",
+                    "Token is invalid or user account is inactive",
+                    false
+            );
+        }
     }
 
-    @PostMapping("/token/update-profile")
-    public ResponseEntity<ApiResponse<UserResponseDto>> updateUserProfile(@Valid @RequestBody UpdateUserRequestDto registerDto) {
-        log.info("Admin update profile request for ID card: {}", registerDto.getUsername());
+    @PostMapping("create-user")
+    @RequiresRole(value = {"ADMIN", "SUPER"}, anyRole = true, message = "Only administrators and super admin can create users")
+    public ApiResponse<UserResponseDto> createUser(@Valid @RequestBody RegisterRequestDto registerDto) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        UserResponseDto userResponse = authService.updateUserProfile(registerDto, authentication.getName());
-        log.info("Admin update profile successful for: {}", registerDto.getUsername());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ApiResponse<>(
-                        "success",
-                        "User profile updated successfully",
-                        userResponse
-                ));
+        UserResponseDto userResponse = authService.createUserByAdmin(registerDto);
+
+
+        return new ApiResponse<>(
+                "success",
+                "User created successfully",
+                userResponse
+        );
     }
 }

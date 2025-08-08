@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
+import org.springdoc.core.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,7 +16,8 @@ import org.springframework.context.annotation.Configuration;
         type = SecuritySchemeType.HTTP,
         scheme = "bearer",
         bearerFormat = "JWT",
-        in = SecuritySchemeIn.HEADER
+        in = SecuritySchemeIn.HEADER,
+        description = "JWT authorization"
 )
 public class OpenApiConfig {
 
@@ -23,17 +25,17 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Internal DEV API")
+                        .title("CamDx check API")
                         .version("1.0")
-                        .description("Internal DEV API Documentation"))
+                        .description("CamDx check API Documentation"))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
     }
 
     @Bean
-    public org.springdoc.core.models.GroupedOpenApi publicApi() {
-        return org.springdoc.core.models.GroupedOpenApi.builder()
+    public GroupedOpenApi publicApi() {
+        return GroupedOpenApi.builder()
                 .group("public")
-                .pathsToMatch("/**")
+                .pathsToMatch("/**") // match all paths
                 .build();
     }
 }
