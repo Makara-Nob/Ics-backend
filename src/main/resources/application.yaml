@@ -21,7 +21,8 @@ spring:
     hibernate:
       ddl-auto: update
       naming:
-        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
     show-sql: false
     properties:
       hibernate:
@@ -29,7 +30,7 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
-            batch_size: 50
+          batch_size: 50
         order_inserts: true
         order_updates: true
         batch_versioned_data: true
@@ -40,10 +41,9 @@ spring:
 
   # Primary Database (PostgreSQL)
   datasource:
-    url: jdbc:postgresql://192.168.103.106:5432/internal_dev
-    #    url: jdbc:postgresql://192.168.103.106:5432/internal_dev_uat
+    url: jdbc:postgresql://localhost:5432/ics
     username: postgres
-    password: 123cp!@#
+    password: 88889999
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 20
@@ -64,6 +64,22 @@ spring:
         queue-capacity: 100
         thread-name-prefix: async-telegram-
 
+  # Mail Configuration
+  mail:
+    host: 10.18.1.204
+    port: 25
+    username: ithelpdesk@cambodiapostbank.com.kh
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: false
+          ssl:
+            trust: '*'
+    default-encoding: UTF-8
+
 # JWT Configuration
 jwt:
   secret:
@@ -83,9 +99,9 @@ app:
   default-users:
     create: true
   super:
-    idCard: phatmenghor19@gmail.com
+    username: makara@gmail.com
     password: 88889999
-    email: phatmenghor19@gmail.com
+    email: makara@gmail.com
 
   data-load:
     batch-size: 1000
@@ -111,6 +127,8 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
     com.zaxxer.hikari: INFO
     org.postgresql: WARN
+    org.springframework.mail: DEBUG
+    org.springframework.mail.javamail: DEBUG
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
@@ -147,25 +165,3 @@ management:
     export:
       simple:
         enabled: true
-
-  mail:
-    host: 10.18.1.204
-    port: 25
-    username: ithelpdesk@cambodiapostbank.com.kh
-    password:
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: false
-    smtp:
-      ssl:
-        trust: '*'
-    default-encoding: UTF-8
-
-  level:
-    org:
-      springframework:
-        mail: DEBUG
-        mail.javamail: DEBUG

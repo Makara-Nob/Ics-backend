@@ -2,11 +2,11 @@ package com.internal.feature.auth.models;
 
 import com.internal.enumation.StatusData;
 import com.internal.enumation.UserPermission;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 

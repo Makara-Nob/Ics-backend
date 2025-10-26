@@ -7,10 +7,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import javax.annotation.PostConstruct;
-import java.util.TimeZone;
-
-
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
@@ -19,8 +15,8 @@ import java.util.TimeZone;
 public class ApiApplication {
 
     public static void main(String[] args) {
-        log.info("Starting Internal CBC API TraineeReport...");
+        log.info("Starting Ics...");
         SpringApplication.run(ApiApplication.class, args);
-        log.info("Internal CBC API TraineeReport started successfully");
+        log.info("Ics started successfully");
     }
 }

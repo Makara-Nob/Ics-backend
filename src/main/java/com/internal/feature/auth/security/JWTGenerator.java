@@ -1,13 +1,13 @@
 package com.internal.feature.auth.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import java.util.Collection;
-import io.jsonwebtoken.Jwts;
 import java.security.Key;
 import java.util.List;
 import java.util.stream.Collectors;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -15,7 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Enhanced JWT Generator with improved role handling and token management.
@@ -33,8 +34,9 @@ public class JWTGenerator {
     @Value("${jwt.issuer:cbc-sender-api}")
     private String issuer;
 
-    private Key getSigningKey() {
-        return new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS512.getJcaName());
+    private SecretKey getSigningKey() {
+        // For JJWT 0.12+, use Keys.hmacShaKeyFor()
+        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -59,13 +61,13 @@ public class JWTGenerator {
         log.debug("Generating token for user: {} with roles: {}", username, roles);
 
         return Jwts.builder()
-                .setIssuedAt(currentDate)
-                .setExpiration(expireDate)
-                .setSubject(username)
-                .setIssuer(issuer)
+                .issuedAt(currentDate)
+                .expiration(expireDate)
+                .subject(username)
+                .issuer(issuer)
                 .claim("roles", roles)
                 .claim("created", currentDate.getTime())
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .signWith(getSigningKey())
                 .compact();
     }
 
@@ -126,10 +128,10 @@ public class JWTGenerator {
      * @return Claims from token
      */
     private Claims parseToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

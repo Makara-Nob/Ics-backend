@@ -29,7 +29,7 @@ public class DefaultUserInitializer implements CommandLineRunner {
     @Value("${app.default-users.create:true}")
     private boolean createDefaultUsers;
 
-    @Value("${app.super.idCard:phatmenghor19@gmail.com}")
+    @Value("${app.super.username:phatmenghor19@gmail.com}")
     private String superCard;
 
     @Value("${app.super.password:88889999}")
