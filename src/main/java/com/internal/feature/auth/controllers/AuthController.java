@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,40 +33,35 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponseDTO>> login(@Valid @RequestBody LoginRequestDto loginDto) {
         log.info("Authentication attempt for user: {}", loginDto.getUsername());
-        
+
         AuthResponseDTO authResponse = authService.login(loginDto);
         log.info("Authentication successful for user: {}", loginDto.getUsername());
-        
-        return ResponseEntity.ok(new ApiResponse<>(
-            "success",
-            "Login successful",
-            authResponse
-        ));
+
+        return ResponseEntity.ok(ApiResponse.success("Login successful", authResponse));
     }
 
     @PostMapping("/roles")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAvailableRoles() {
         log.debug("Fetching available roles");
-        
+
         List<Map<String, Object>> roles = authService.getAvailableRoles();
         log.debug("Retrieved {} available roles", roles.size());
-        
-        return ResponseEntity.ok(new ApiResponse<>(
-            "success",
-            "Available roles retrieved successfully",
-            roles
-        ));
+
+        return ResponseEntity.ok(ApiResponse.success("Available roles retrieved successfully", roles));
     }
 
     @PostMapping("/validate-token")
     public ResponseEntity<ApiResponse<Boolean>> validateToken() {
         log.debug("Token validation request");
-        
+
         boolean isValid = authService.validateToken();
         String message = isValid ? "Token is valid" : "Token is invalid or user account is inactive";
-        String status = isValid ? "success" : "error";
-        
-        return ResponseEntity.ok(new ApiResponse<>(status, message, isValid));
+
+        return ResponseEntity.ok(
+                isValid
+                        ? ApiResponse.success(message, true)
+                        : ApiResponse.error(message, false)
+        );
     }
 
     @PostMapping("/token/update-profile")
@@ -75,15 +69,9 @@ public class AuthController {
         log.info("Admin update profile request for ID card: {}", registerDto.getUsername());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         UserResponseDto userResponse = authService.updateUserProfile(registerDto, authentication.getName());
-        log.info("Admin update profile successful for: {}", registerDto.getUsername());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ApiResponse<>(
-                        "success",
-                        "User profile updated successfully",
-                        userResponse
-                ));
+        log.info("Admin update profile successful for: {}", registerDto.getUsername());
+        return ResponseEntity.ok(ApiResponse.success("User profile updated successfully", userResponse));
     }
 }
