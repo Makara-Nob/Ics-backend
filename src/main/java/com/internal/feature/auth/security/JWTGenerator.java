@@ -31,7 +31,7 @@ public class JWTGenerator {
     @Value("${jwt.expiration-min}")
     private long jwtExpirationInMinutes;
 
-    @Value("${jwt.issuer:cbc-sender-api}")
+    @Value("${jwt.issuer:ics-api}")
     private String issuer;
 
     private SecretKey getSigningKey() {

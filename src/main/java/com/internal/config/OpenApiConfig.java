@@ -23,9 +23,9 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Internal DEV API")
+                        .title("Inventory Control System API")
                         .version("1.0")
-                        .description("Internal DEV API Documentation"))
+                        .description("Inventory Control System API Documentation"))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
     }
 

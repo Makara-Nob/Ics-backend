@@ -1,6 +1,6 @@
 package com.internal.feature.product.dto.request;
 
-import com.internal.enumation.ProductStatus;
+import com.internal.enumation.StatusData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class AllProductRequestDto {
+public class GetAllProductRequestDto {
     @Builder.Default
     private int pageNo = 1;
 
@@ -18,5 +18,5 @@ public class AllProductRequestDto {
     private int pageSize = 10;
 
     private String search;
-    private ProductStatus status;
+    private StatusData status;
 }

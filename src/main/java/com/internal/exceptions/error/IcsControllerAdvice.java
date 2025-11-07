@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
-@ControllerAdvice(basePackages = "com.internal.feature.report_staging.controller")
+@ControllerAdvice(basePackages = "com.internal.feature")
 @Slf4j
-public class CbcControllerAdvice {
+public class IcsControllerAdvice {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleNotFoundException(NotFoundException ex) {
@@ -60,9 +60,9 @@ public class CbcControllerAdvice {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<String>> handleRuntimeException(RuntimeException ex) {
-        log.error("Runtime error in CBC operation: {}", ex.getMessage(), ex);
+        log.error("Runtime error in ICS operation: {}", ex.getMessage(), ex);
         
-        String message = "An error occurred during CBC data operation";
+        String message = "An error occurred during ICS data operation";
         if (ex.getMessage().contains("SQL Server")) {
             message = "Failed to connect to or execute operation on SQL Server database";
         } else if (ex.getMessage().contains("batch")) {
@@ -83,9 +83,10 @@ public class CbcControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleGenericException(Exception ex) {
-        log.error("Unexpected error in CBC controller: {}", ex.getMessage(), ex);
+        log.error("Unexpected error in ICS controller: {}", ex.getMessage(), ex);
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiResponse<>("error", "An unexpected error occurred. Please try again later.", null));
     }
 }
+

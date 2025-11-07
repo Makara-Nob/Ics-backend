@@ -1,20 +1,22 @@
 package com.internal.feature.product.dto.response;
 
-import com.internal.feature.auth.dto.response.UserResponseDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class AllProductPagination {
-    private List<ProductDto> content;
+@AllArgsConstructor
+@Builder
+public class AllProductResponseDto {
+    private List<ProductResponseDto> content;
     private int pageNo;
     private int pageSize;
     private long totalElements;
     private int totalPages;
     private boolean last;
 }
+

@@ -1,15 +1,21 @@
 package com.internal.feature.product.service;
 
-import com.internal.feature.product.dto.request.AllProductRequestDto;
-import com.internal.feature.product.dto.response.AllProductPagination;
-import com.internal.feature.product.model.Product;
 
-import java.util.List;
+import com.internal.feature.product.dto.request.CreateProductRequestDto;
+import com.internal.feature.product.dto.request.GetAllProductRequestDto;
+import com.internal.feature.product.dto.request.UpdateProductRequestDto;
+import com.internal.feature.product.dto.response.AllProductResponseDto;
+import com.internal.feature.product.dto.response.ProductResponseDto;
 
 public interface ProductService {
-    Product updateProduct(Long id, Product product);
+    AllProductResponseDto getAllProducts(GetAllProductRequestDto requestDto);
 
-    Product getProductById(Long id);
+    ProductResponseDto getProductById(Long id);
 
-    AllProductPagination getAllProducts(AllProductRequestDto request);
+    ProductResponseDto createProduct(CreateProductRequestDto requestDto);
+
+    ProductResponseDto updateProduct(Long id, UpdateProductRequestDto requestDto);
+
+    ProductResponseDto deleteProduct(Long id);
 }
+
