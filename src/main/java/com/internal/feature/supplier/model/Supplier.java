@@ -1,26 +1,37 @@
 package com.internal.feature.supplier.model;
 
-import com.internal.feature.product.model.Product;
+import com.internal.enumation.StatusData;
+import com.internal.feature.auth.models.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.util.List;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "suppliers")
 @Data
-public class Supplier {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class Supplier extends BaseEntity {
     
-    @Column(nullable = false)
+    @Column(nullable = false, length = 200)
     private String name;
     
+    @Column(name = "contact_person", length = 100)
     private String contactPerson;
+    
+    @Column(length = 100)
     private String email;
+    
+    @Column(length = 20)
     private String phone;
+    
+    @Column(columnDefinition = "TEXT")
     private String address;
     
-    @OneToMany(mappedBy = "supplier")
-    private List<Product> products;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusData status = StatusData.ACTIVE;
 }

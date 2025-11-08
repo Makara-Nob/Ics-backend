@@ -1,11 +1,11 @@
-package com.internal.feature.inventory.specification;
+package com.internal.feature.supplier.specification;
 
 import com.internal.enumation.StatusData;
-import com.internal.feature.inventory.model.Category;
+import com.internal.feature.supplier.model.Supplier;
 import org.springframework.data.jpa.domain.Specification;
 
-public class CategorySpecification {
-    public static Specification<Category> hasStatus(StatusData status) {
+public class SupplierSpecification {
+    public static Specification<Supplier> hasStatus(StatusData status) {
         return (root, query, criteriaBuilder) -> {
             if (status == null) {
                 return null;
@@ -14,7 +14,7 @@ public class CategorySpecification {
         };
     }
 
-    public static Specification<Category> search(String keyword) {
+    public static Specification<Supplier> search(String keyword) {
         return (root, query, criteriaBuilder) -> {
             if (keyword == null || keyword.isBlank()) {
                 return null;
@@ -24,9 +24,12 @@ public class CategorySpecification {
 
             return criteriaBuilder.or(
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), lowerKeyword),
-                    criteriaBuilder.equal(root.get("code"), keyword)
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("contactPerson")), lowerKeyword),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), lowerKeyword),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("phone")), lowerKeyword),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("address")), lowerKeyword)
             );
         };
     }
-
 }
+

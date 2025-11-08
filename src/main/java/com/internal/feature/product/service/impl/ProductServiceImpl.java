@@ -8,7 +8,6 @@ import com.internal.feature.product.dto.request.GetAllProductRequestDto;
 import com.internal.feature.product.dto.request.UpdateProductRequestDto;
 import com.internal.feature.product.dto.response.AllProductResponseDto;
 import com.internal.feature.product.dto.response.ProductResponseDto;
-import com.internal.feature.product.specification.ProductSpecification;
 import com.internal.feature.product.mapper.ProductMapper;
 import com.internal.feature.product.model.Product;
 import com.internal.feature.product.repository.ProductRepository;
@@ -23,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import com.internal.feature.product.specification.ProductSpecification;
 
 @Service
 @Transactional

@@ -29,13 +29,13 @@ public class DefaultUserInitializer implements CommandLineRunner {
     @Value("${app.default-users.create:true}")
     private boolean createDefaultUsers;
 
-    @Value("${app.super.username:phatmenghor19@gmail.com}")
+    @Value("${app.super.username:admin@gmail.com}")
     private String superCard;
 
     @Value("${app.super.password:88889999}")
     private String superPassword;
 
-    @Value("${app.super.email:phatmenghor19@gmail.com}")
+    @Value("${app.super.email:admin@gmail.com}")
     private String superEmail;
 
     @Override
