@@ -3,6 +3,8 @@ package com.internal.feature.product.service.impl;
 import com.internal.enumation.StatusData;
 import com.internal.exceptions.error.AlreadyExistException;
 import com.internal.exceptions.error.NotFoundException;
+import com.internal.feature.inventory.model.Category;
+import com.internal.feature.inventory.repository.CategoryRepository;
 import com.internal.feature.product.dto.request.CreateProductRequestDto;
 import com.internal.feature.product.dto.request.GetAllProductRequestDto;
 import com.internal.feature.product.dto.request.UpdateProductRequestDto;
@@ -12,6 +14,8 @@ import com.internal.feature.product.mapper.ProductMapper;
 import com.internal.feature.product.model.Product;
 import com.internal.feature.product.repository.ProductRepository;
 import com.internal.feature.product.service.ProductService;
+import com.internal.feature.supplier.model.Supplier;
+import com.internal.feature.supplier.repository.SupplierRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,6 +35,8 @@ import com.internal.feature.product.specification.ProductSpecification;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final SupplierRepository supplierRepository;
     private final ProductMapper productMapper;
 
     @Override
@@ -76,7 +82,27 @@ public class ProductServiceImpl implements ProductService {
         try {
             validateCreateProduct(requestDto);
 
+            // Fetch Category
+            Category category = categoryRepository.findById(requestDto.getCategoryId())
+                    .orElseThrow(() -> {
+                        log.warn("Category not found with ID: {}", requestDto.getCategoryId());
+                        return new NotFoundException("Category not found with ID: " + requestDto.getCategoryId());
+                    });
+
+            // Fetch Supplier (optional)
+            Supplier supplier = null;
+            if (requestDto.getSupplierId() != null) {
+                supplier = supplierRepository.findById(requestDto.getSupplierId())
+                        .orElseThrow(() -> {
+                            log.warn("Supplier not found with ID: {}", requestDto.getSupplierId());
+                            return new NotFoundException("Supplier not found with ID: " + requestDto.getSupplierId());
+                        });
+            }
+
             Product product = productMapper.toEntity(requestDto);
+            product.setCategory(category);
+            product.setSupplier(supplier);
+
             if (product.getQuantity() == null) {
                 product.setQuantity(0);
             }
@@ -89,7 +115,9 @@ public class ProductServiceImpl implements ProductService {
 
             Product savedProduct = productRepository.save(product);
 
-            log.info("Product created successfully: id={}, name='{}'", savedProduct.getId(), savedProduct.getName());
+            log.info("Product created successfully: id={}, name='{}', category='{}', supplier='{}'",
+                    savedProduct.getId(), savedProduct.getName(),
+                    category.getName(), supplier != null ? supplier.getName() : "none");
             return productMapper.toDto(savedProduct);
 
         } catch (Exception e) {
@@ -119,6 +147,26 @@ public class ProductServiceImpl implements ProductService {
 
             validateUpdateProduct(id, requestDto, existingProduct);
 
+            // Update Category if provided
+            if (requestDto.getCategoryId() != null) {
+                Category category = categoryRepository.findById(requestDto.getCategoryId())
+                        .orElseThrow(() -> {
+                            log.warn("Category not found with ID: {}", requestDto.getCategoryId());
+                            return new NotFoundException("Category not found with ID: " + requestDto.getCategoryId());
+                        });
+                existingProduct.setCategory(category);
+            }
+
+            // Update Supplier if provided
+            if (requestDto.getSupplierId() != null) {
+                Supplier supplier = supplierRepository.findById(requestDto.getSupplierId())
+                        .orElseThrow(() -> {
+                            log.warn("Supplier not found with ID: {}", requestDto.getSupplierId());
+                            return new NotFoundException("Supplier not found with ID: " + requestDto.getSupplierId());
+                        });
+                existingProduct.setSupplier(supplier);
+            }
+
             productMapper.updateEntity(requestDto, existingProduct);
             Product updatedProduct = productRepository.save(existingProduct);
 
@@ -132,7 +180,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private void validateUpdateProduct(Long id, UpdateProductRequestDto requestDto, Product existingProduct) {
-        if (requestDto.getSku() != null 
+        if (requestDto.getSku() != null
                 && !existingProduct.getSku().equals(requestDto.getSku())
                 && productRepository.existsBySkuAndIdNot(requestDto.getSku(), id)) {
             log.warn("Product update failed — duplicate SKU: {}", requestDto.getSku());

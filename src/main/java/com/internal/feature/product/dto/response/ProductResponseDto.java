@@ -1,5 +1,8 @@
 package com.internal.feature.product.dto.response;
 
+import com.internal.enumation.StatusData;
+import com.internal.feature.inventory.dto.response.CategoryDTO;
+import com.internal.feature.supplier.dto.response.SupplierResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,12 +20,13 @@ public class ProductResponseDto {
     private String name;
     private String sku;
     private String description;
-    private String category;
+    private CategoryDTO category;
+    private SupplierResponseDto supplier;
     private Integer quantity;
     private Integer minStock;
     private BigDecimal costPrice;
     private BigDecimal sellingPrice;
-    private String status;
+    private StatusData status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String createdBy;

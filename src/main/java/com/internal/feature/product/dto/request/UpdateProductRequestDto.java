@@ -12,7 +12,11 @@ public class UpdateProductRequestDto {
     private String sku;
     private String description;
     private String category;
-    
+
+    private Long categoryId;
+
+    private Long supplierId;
+
     @PositiveOrZero(message = "Quantity must be positive or zero")
     private Integer quantity;
     

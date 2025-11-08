@@ -1,35 +1,36 @@
 package com.internal.feature.product.mapper;
 
+import com.internal.feature.inventory.mapper.CategoryMapper;
 import com.internal.feature.product.dto.request.CreateProductRequestDto;
 import com.internal.feature.product.dto.request.UpdateProductRequestDto;
 import com.internal.feature.product.dto.response.AllProductResponseDto;
 import com.internal.feature.product.dto.response.ProductResponseDto;
 import com.internal.feature.product.model.Product;
+import com.internal.feature.supplier.mapper.SupplierMapper;
 import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {CategoryMapper.class, SupplierMapper.class})
 public interface ProductMapper {
 
-    @Mapping(source = "status", target = "status", qualifiedByName = "statusToString")
+    @Mapping(source = "category", target = "category")
+    @Mapping(source = "supplier", target = "supplier")
     ProductResponseDto toDto(Product product);
-    
-    @Named("statusToString")
-    default String statusToString(com.internal.enumation.StatusData status) {
-        return status != null ? status.name() : null;
-    }
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", ignore = true)
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "supplier", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     Product toEntity(CreateProductRequestDto dto);
 
-    // Update entity from DTO
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "supplier", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
