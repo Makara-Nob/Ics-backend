@@ -40,7 +40,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/ics-backend
     username: postgres
-    password: 88889999
+    password: Mak#12
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 20
